@@ -14,13 +14,13 @@ Use npm install to install package
 npm install
 ```
 
-#Usage
+# Usage
 ```
 npm start
 ```
 
 # Sample curl Request
 ```
-curl --location --request GET 'localhost:3000/specification' \
+curl --location --request GET 'localhost:3000/review' \
 --header 'url: https://www.tigerdirect.com/applications/SearchTools/item-details.asp?EdpNo=1255116'
 ```
