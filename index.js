@@ -3,27 +3,9 @@ const app = express()
 
 const puppeteer = require('puppeteer');
 
-app.get('/price', async (req, res) => {
-    const browser = await puppeteer.launch({ headless: false });
-    const page = await browser.newPage();
-    // await page.setViewport({ deviceScaleFactor: 1 })
-    await page.goto(req.headers.url);
-    const result = await page.evaluate((x) => document.querySelector('#ProductReview > div.col-sm-12.col-lg-5.pdp-specs-info > div > div.pdp-price > p:nth-child(3) > span.sale-price > span:nth-child(2)').innerHTML)
-    const penny = await page.evaluate((x) => document.querySelector('#ProductReview > div.col-sm-12.col-lg-5.pdp-specs-info > div > div.pdp-price > p:nth-child(3) > span.sale-price > sup:nth-child(3)').innerText)
-    console.log("===>>", penny)
-    console.log("====>>>", result)
-    await page.screenshot({ path: 'price.png' });
-    await browser.close();
-    res.json({
-        price: result,
-        penny
-    })
-})
-
 app.get('/specification', async (req, res) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    // await page.setViewport({ deviceScaleFactor: 1 })
     await page.goto(req.headers.url);
     await page.click('#mainC > section > div > div.responsive-tabs > ul > li:nth-child(2) > a')
     let specification = await page.evaluate((x) => {
@@ -43,11 +25,10 @@ app.get('/specification', async (req, res) => {
 })
 
 app.get('/review', async (req, res) => {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    // await page.setViewport({ deviceScaleFactor: 1 })
     await page.goto(req.headers.url);
-    let check = await page.evaluate(() => {
+    let check = await page.evaluate(() => { //checking wether review button is on the page or not 
         if (document.querySelectorAll('#reviewtab > a').length != 0) {
             return true
         }
@@ -73,9 +54,15 @@ app.get('/review', async (req, res) => {
         qualityReview = [...qualityReview]
         let performanceReview = document.querySelectorAll('#customerReviews > div > div.leftCol > dl.itemReview > dd:nth-child(10)')
         performanceReview = [...performanceReview]
+        let name = document.querySelectorAll('#customerReviews > div > div.leftCol > dl.reviewer > dd:nth-child(2)')
+        name = [...name]
+        let date = document.querySelectorAll('#customerReviews > div > div.leftCol > dl.reviewer > dd:nth-child(4)')
+        date = [...date]
         let finalResult = []
         for (let i = 0; i < FirstReview.length; i++) {
             finalResult.push({
+                'Name': name[i].innerText,
+                'Date': date.innerText,
                 'Review': FirstReview[i].innerText,
                 'review description': description[i].innerText,
                 'overall rating': overallReview[i].innerText,
@@ -90,7 +77,6 @@ app.get('/review', async (req, res) => {
     res.json({
         review
     })
-    // await browser.waitForTarget()
     await browser.close();
 })
 
@@ -117,7 +103,6 @@ app.get('/warrenty', async (req, res) => {
     res.json({
         warrenty
     })
-    // await browser.waitForTarget()
     await browser.close();
 })
 
